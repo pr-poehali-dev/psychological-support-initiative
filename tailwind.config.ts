@@ -65,8 +65,8 @@ export default {
 				}
 			},
 			fontFamily: {
-				display: ['Cormorant', 'serif'],
-				body: ['Golos Text', 'sans-serif'],
+				display: ['Instrument Serif', 'Georgia', 'serif'],
+				body: ['Work Sans', 'Helvetica Neue', 'sans-serif'],
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
