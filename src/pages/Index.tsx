@@ -3,6 +3,7 @@ import { Header, HeroSection, PainPointsSection, AboutSection } from "@/componen
 import { ProcessSection, ResultsSection } from "@/components/sections/ProcessResultsSections";
 import { TestimonialsSection, PricingSection } from "@/components/sections/TestimonialsPricingSection";
 import { ContactSection, Footer } from "@/components/sections/ContactFooterSection";
+import PortfolioSection from "@/components/sections/PortfolioSection";
 
 export default function Index() {
   const [dark, setDark] = useState(false);
@@ -59,6 +60,7 @@ export default function Index() {
       <HeroSection />
       <PainPointsSection />
       <AboutSection />
+      <PortfolioSection />
       <ProcessSection />
       <ResultsSection />
       <TestimonialsSection />

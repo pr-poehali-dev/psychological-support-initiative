@@ -6,6 +6,7 @@ export const ABOUT_IMG = "https://cdn.poehali.dev/projects/23da038f-4d57-467c-a4
 
 export const NAV = [
   { label: "Обо мне", href: "#about" },
+  { label: "Услуги", href: "#portfolio" },
   { label: "Как работаю", href: "#process" },
   { label: "Цены", href: "#pricing" },
   { label: "Отзывы", href: "#testimonials" },
