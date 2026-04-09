@@ -62,6 +62,7 @@ function TestimonialsCarousel() {
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const total = TESTIMONIALS.length;
+  const touchStartX = useRef<number | null>(null);
 
   useEffect(() => {
     if (paused) return;
@@ -71,11 +72,28 @@ function TestimonialsCarousel() {
 
   const t = TESTIMONIALS[active];
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+    setPaused(true);
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diff = touchStartX.current - e.changedTouches[0].clientX;
+    if (Math.abs(diff) > 40) {
+      setActive(i => diff > 0 ? (i + 1) % total : (i - 1 + total) % total);
+    }
+    touchStartX.current = null;
+    setPaused(false);
+  };
+
   return (
     <div
       className="relative"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
+      onTouchStart={handleTouchStart}
+      onTouchEnd={handleTouchEnd}
     >
       <div
         className="rounded-2xl p-8 md:p-10 border flex flex-col gap-6"
