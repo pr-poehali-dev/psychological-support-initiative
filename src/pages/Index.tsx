@@ -553,7 +553,7 @@ export default function Index() {
                 style={{ background: "var(--color-primary)", color: "var(--color-text-inverse)" }}>
                 <Icon name="Send" size={16} /> Написать в Telegram
               </a>
-              <a href="tel:+79241234567"
+              <a href="tel:+79142755070"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-sm font-medium border-[1.5px]"
                 style={{ borderColor: "var(--color-border)", color: "var(--color-text)" }}>
                 <Icon name="Phone" size={16} /> Позвонить
