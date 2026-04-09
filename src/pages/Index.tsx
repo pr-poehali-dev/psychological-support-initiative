@@ -548,7 +548,7 @@ export default function Index() {
           </Reveal>
           <Reveal delay={4}>
             <div className="flex flex-col sm:flex-row gap-3 justify-center mb-8">
-              <a href="https://t.me/yourhandle" target="_blank" rel="noopener noreferrer"
+              <a href="https://t.me/igraol" target="_blank" rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-2 px-6 py-3.5 rounded-full text-sm font-medium"
                 style={{ background: "var(--color-primary)", color: "var(--color-text-inverse)" }}>
                 <Icon name="Send" size={16} /> Написать в Telegram
