@@ -58,6 +58,87 @@ const PRICING = [
 
 const ABOUT_TAGS = ["Тревога и стресс", "Выгорание", "Кризисы идентичности", "Семейные конфликты", "Личные границы", "Онлайн и очно"];
 
+function TestimonialsCarousel() {
+  const [active, setActive] = useState(0);
+  const [paused, setPaused] = useState(false);
+  const total = TESTIMONIALS.length;
+
+  useEffect(() => {
+    if (paused) return;
+    const timer = setInterval(() => setActive(i => (i + 1) % total), 5000);
+    return () => clearInterval(timer);
+  }, [paused, total]);
+
+  const t = TESTIMONIALS[active];
+
+  return (
+    <div
+      className="relative"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+    >
+      <div
+        className="rounded-2xl p-8 md:p-10 border flex flex-col gap-6"
+        style={{ background: "var(--color-surface-2)", borderColor: "var(--color-border)", minHeight: 280 }}
+      >
+        <div className="text-lg" style={{ color: "var(--color-accent-warm)" }}>★★★★★</div>
+        <p
+          className="flex-1 text-base italic leading-relaxed"
+          style={{ fontFamily: "Instrument Serif, serif", color: "var(--color-text-muted)", fontSize: "1.1rem" }}
+          key={active}
+        >
+          «{t.text}»
+        </p>
+        <div className="flex items-center gap-3 pt-4 border-t" style={{ borderColor: "var(--color-divider)" }}>
+          <div
+            className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
+            style={{ background: "var(--color-primary-light)", color: "var(--color-primary)" }}
+          >
+            {t.initial}
+          </div>
+          <div>
+            <div className="text-sm font-semibold">{t.name}</div>
+            <div className="text-xs" style={{ color: "var(--color-text-faint)" }}>{t.meta}</div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-between mt-6">
+        <button
+          onClick={() => setActive(i => (i - 1 + total) % total)}
+          className="w-10 h-10 rounded-full border flex items-center justify-center transition-colors hover:bg-opacity-80"
+          style={{ borderColor: "var(--color-border)", color: "var(--color-text-muted)", background: "var(--color-surface-2)" }}
+        >
+          <Icon name="ChevronLeft" size={18} />
+        </button>
+
+        <div className="flex gap-2">
+          {TESTIMONIALS.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setActive(i)}
+              className="rounded-full transition-all"
+              style={{
+                width: i === active ? 24 : 8,
+                height: 8,
+                background: i === active ? "var(--color-primary)" : "var(--color-border)",
+              }}
+            />
+          ))}
+        </div>
+
+        <button
+          onClick={() => setActive(i => (i + 1) % total)}
+          className="w-10 h-10 rounded-full border flex items-center justify-center transition-colors hover:bg-opacity-80"
+          style={{ borderColor: "var(--color-border)", color: "var(--color-text-muted)", background: "var(--color-surface-2)" }}
+        >
+          <Icon name="ChevronRight" size={18} />
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function Reveal({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -414,33 +495,10 @@ export default function Index() {
 
       {/* TESTIMONIALS */}
       <section id="testimonials" className="py-20 md:py-24">
-        <div className="max-w-5xl mx-auto px-6">
+        <div className="max-w-3xl mx-auto px-6">
           <Reveal><p className="section-label">Отзывы</p></Reveal>
           <Reveal delay={1}><h2 className="mb-10" style={{ fontFamily: "Instrument Serif, serif", fontSize: "clamp(2rem,1.2rem+2.5vw,3.5rem)" }}>Что говорят клиенты</h2></Reveal>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {TESTIMONIALS.map((t, i) => (
-              <Reveal key={t.name} delay={Math.min(i, 3) as 0|1|2|3}>
-                <div className="card-hover rounded-2xl p-7 border flex flex-col gap-5 h-full"
-                  style={{ background: "var(--color-surface-2)", borderColor: "var(--color-border)" }}>
-                  <div className="text-base" style={{ color: "var(--color-accent-warm)" }}>★★★★★</div>
-                  <p className="flex-1 text-base italic leading-relaxed"
-                    style={{ fontFamily: "Instrument Serif, serif", color: "var(--color-text-muted)" }}>
-                    «{t.text}»
-                  </p>
-                  <div className="flex items-center gap-3 pt-4 border-t" style={{ borderColor: "var(--color-divider)" }}>
-                    <div className="w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm flex-shrink-0"
-                      style={{ background: "var(--color-primary-light)", color: "var(--color-primary)" }}>
-                      {t.initial}
-                    </div>
-                    <div>
-                      <div className="text-sm font-semibold">{t.name}</div>
-                      <div className="text-xs" style={{ color: "var(--color-text-faint)" }}>{t.meta}</div>
-                    </div>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
-          </div>
+          <TestimonialsCarousel />
         </div>
       </section>
 
