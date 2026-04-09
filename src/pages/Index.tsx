@@ -80,6 +80,7 @@ export default function Index() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", message: "" });
+  const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   useEffect(() => {
     const stored = localStorage.getItem("theme");
@@ -94,6 +95,27 @@ export default function Index() {
     window.addEventListener("scroll", fn, { passive: true });
     return () => window.removeEventListener("scroll", fn);
   }, []);
+
+  const handleFormSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name.trim() || !form.phone.trim()) return;
+    setFormStatus("loading");
+    try {
+      const res = await fetch("https://functions.poehali.dev/4dc45207-e781-4cb3-961c-a2b1ee3e0ed1", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(form),
+      });
+      if (res.ok) {
+        setFormStatus("success");
+        setForm({ name: "", phone: "", message: "" });
+      } else {
+        setFormStatus("error");
+      }
+    } catch {
+      setFormStatus("error");
+    }
+  };
 
   const toggleDark = () => {
     const next = !dark;
@@ -476,36 +498,52 @@ export default function Index() {
           </Reveal>
           <Reveal delay={3}>
             <div className="rounded-2xl p-6 border text-left mb-8" style={{ background: "var(--color-surface-2)", borderColor: "var(--color-border)" }}>
-              <div className="flex flex-col gap-4">
-                {[
-                  { key: "name", label: "Ваше имя", placeholder: "Как вас зовут?", type: "text" },
-                  { key: "phone", label: "Телефон или Telegram", placeholder: "+7 (___) ___-__-__", type: "text" },
-                ].map(({ key, label, placeholder, type }) => (
-                  <div key={key}>
-                    <label className="block text-xs font-semibold mb-1.5" style={{ color: "var(--color-text-muted)" }}>{label}</label>
-                    <input type={type} placeholder={placeholder}
-                      value={form[key as keyof typeof form]}
-                      onChange={e => setForm({ ...form, [key]: e.target.value })}
-                      className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
+              {formStatus === "success" ? (
+                <div className="flex flex-col items-center justify-center gap-3 py-8 text-center">
+                  <div className="w-14 h-14 rounded-full flex items-center justify-center mb-2"
+                    style={{ background: "var(--color-primary-light)" }}>
+                    <Icon name="Check" size={28} style={{ color: "var(--color-primary)" }} />
+                  </div>
+                  <h3 className="text-lg font-semibold" style={{ fontFamily: "Instrument Serif, serif" }}>Заявка отправлена!</h3>
+                  <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>Ольга свяжется с вами в течение часа.</p>
+                  <button onClick={() => setFormStatus("idle")} className="mt-2 text-xs underline" style={{ color: "var(--color-text-faint)" }}>Отправить ещё</button>
+                </div>
+              ) : (
+                <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">
+                  {[
+                    { key: "name", label: "Ваше имя", placeholder: "Как вас зовут?", type: "text" },
+                    { key: "phone", label: "Телефон или Telegram", placeholder: "+7 (___) ___-__-__", type: "text" },
+                  ].map(({ key, label, placeholder, type }) => (
+                    <div key={key}>
+                      <label className="block text-xs font-semibold mb-1.5" style={{ color: "var(--color-text-muted)" }}>{label}</label>
+                      <input type={type} placeholder={placeholder} required={key !== "message"}
+                        value={form[key as keyof typeof form]}
+                        onChange={e => setForm({ ...form, [key]: e.target.value })}
+                        className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all"
+                        style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", color: "var(--color-text)", fontFamily: "inherit" }} />
+                    </div>
+                  ))}
+                  <div>
+                    <label className="block text-xs font-semibold mb-1.5" style={{ color: "var(--color-text-muted)" }}>С чем хотите поработать?</label>
+                    <textarea rows={3} placeholder="Опишите в нескольких словах (необязательно)"
+                      value={form.message}
+                      onChange={e => setForm({ ...form, message: e.target.value })}
+                      className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all resize-none"
                       style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", color: "var(--color-text)", fontFamily: "inherit" }} />
                   </div>
-                ))}
-                <div>
-                  <label className="block text-xs font-semibold mb-1.5" style={{ color: "var(--color-text-muted)" }}>С чем хотите поработать?</label>
-                  <textarea rows={3} placeholder="Опишите в нескольких словах (необязательно)"
-                    value={form.message}
-                    onChange={e => setForm({ ...form, message: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl text-sm outline-none transition-all resize-none"
-                    style={{ background: "var(--color-surface)", border: "1px solid var(--color-border)", color: "var(--color-text)", fontFamily: "inherit" }} />
-                </div>
-                <button className="w-full py-3.5 rounded-full text-sm font-medium transition-all"
-                  style={{ background: "var(--color-primary)", color: "var(--color-text-inverse)" }}>
-                  Отправить заявку
-                </button>
-                <p className="text-center text-xs" style={{ color: "var(--color-text-faint)" }}>
-                  Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности
-                </p>
-              </div>
+                  {formStatus === "error" && (
+                    <p className="text-xs text-red-500 text-center">Произошла ошибка. Попробуйте ещё раз или напишите напрямую.</p>
+                  )}
+                  <button type="submit" disabled={formStatus === "loading"}
+                    className="w-full py-3.5 rounded-full text-sm font-medium transition-all flex items-center justify-center gap-2"
+                    style={{ background: "var(--color-primary)", color: "var(--color-text-inverse)", opacity: formStatus === "loading" ? 0.7 : 1 }}>
+                    {formStatus === "loading" ? <><Icon name="Loader" size={16} className="animate-spin" /> Отправляем...</> : "Отправить заявку"}
+                  </button>
+                  <p className="text-center text-xs" style={{ color: "var(--color-text-faint)" }}>
+                    Нажимая кнопку, вы соглашаетесь с политикой конфиденциальности
+                  </p>
+                </form>
+              )}
             </div>
           </Reveal>
           <Reveal delay={4}>
