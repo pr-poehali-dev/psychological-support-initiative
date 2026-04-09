@@ -576,6 +576,14 @@ export default function Index() {
             <a href="#" className="hover:text-white transition-colors">Политика конфиденциальности</a>
             <a href="#" className="hover:text-white transition-colors">Пользовательское соглашение</a>
           </div>
+          <div className="flex flex-col sm:flex-row items-center gap-4 text-xs" style={{ color: "rgba(255,255,255,0.45)" }}>
+            <a href="tel:+79142755070" className="hover:text-white transition-colors flex items-center gap-1.5">
+              <Icon name="Phone" size={13} /> +7 914 275-50-70
+            </a>
+            <a href="https://t.me/igraol" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors flex items-center gap-1.5">
+              <Icon name="Send" size={13} /> @igraol
+            </a>
+          </div>
           <div className="text-xs" style={{ color: "rgba(255,255,255,0.35)" }}>© 2026. Все права защищены.</div>
         </div>
       </footer>
