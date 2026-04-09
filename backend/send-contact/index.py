@@ -3,10 +3,11 @@ import os
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+import psycopg2
 
 
 def handler(event: dict, context) -> dict:
-    """Отправка формы обратной связи на email igraol@yandex.ru"""
+    """Отправка формы обратной связи на email и сохранение заявки в БД"""
     cors_headers = {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "POST, OPTIONS",
@@ -28,28 +29,39 @@ def handler(event: dict, context) -> dict:
             "body": json.dumps({"error": "Имя и телефон обязательны"}),
         }
 
+    schema = os.environ.get("MAIN_DB_SCHEMA", "public")
+    conn = psycopg2.connect(os.environ["DATABASE_URL"])
+    cur = conn.cursor()
+    cur.execute(
+        f"INSERT INTO {schema}.contact_requests (name, phone, message, status) VALUES ('{name.replace(chr(39), chr(39)*2)}', '{phone.replace(chr(39), chr(39)*2)}', '{message.replace(chr(39), chr(39)*2)}', 'new')"
+    )
+    conn.commit()
+    cur.close()
+    conn.close()
+
     smtp_user = "igraol@yandex.ru"
     smtp_password = os.environ.get("SMTP_PASSWORD", "")
 
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = f"Новая заявка с сайта: {name}"
-    msg["From"] = smtp_user
-    msg["To"] = smtp_user
+    if smtp_password:
+        msg = MIMEMultipart("alternative")
+        msg["Subject"] = f"Новая заявка с сайта: {name}"
+        msg["From"] = smtp_user
+        msg["To"] = smtp_user
 
-    html = f"""
-    <div style="font-family: Arial, sans-serif; max-width: 500px; padding: 24px; border: 1px solid #e5e5e5; border-radius: 8px;">
-        <h2 style="color: #5a4a3a; margin-bottom: 16px;">Новая заявка с сайта</h2>
-        <p><strong>Имя:</strong> {name}</p>
-        <p><strong>Телефон:</strong> {phone}</p>
-        {"<p><strong>Сообщение:</strong> " + message + "</p>" if message else ""}
-    </div>
-    """
+        html = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 500px; padding: 24px; border: 1px solid #e5e5e5; border-radius: 8px;">
+            <h2 style="color: #5a4a3a; margin-bottom: 16px;">Новая заявка с сайта</h2>
+            <p><strong>Имя:</strong> {name}</p>
+            <p><strong>Телефон:</strong> {phone}</p>
+            {"<p><strong>Сообщение:</strong> " + message + "</p>" if message else ""}
+        </div>
+        """
 
-    msg.attach(MIMEText(html, "html"))
+        msg.attach(MIMEText(html, "html"))
 
-    with smtplib.SMTP_SSL("smtp.yandex.ru", 465) as server:
-        server.login(smtp_user, smtp_password)
-        server.sendmail(smtp_user, smtp_user, msg.as_string())
+        with smtplib.SMTP_SSL("smtp.yandex.ru", 465) as server:
+            server.login(smtp_user, smtp_password)
+            server.sendmail(smtp_user, smtp_user, msg.as_string())
 
     return {
         "statusCode": 200,
