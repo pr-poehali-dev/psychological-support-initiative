@@ -115,22 +115,25 @@ export function TestimonialsCarousel() {
       onTouchEnd={handleTouchEnd}
     >
       <div
-        className="rounded-2xl border overflow-hidden flex"
-        style={{ background: "var(--color-surface-2)", borderColor: "var(--color-border)", minHeight: 320 }}
+        className="rounded-2xl p-8 md:p-10 border flex flex-col gap-6"
+        style={{ background: "var(--color-surface-2)", borderColor: "var(--color-border)", minHeight: 280 }}
       >
-        <div className="w-1/3 flex-shrink-0">
-          <img src={t.photo} alt={t.name} className="w-full h-full object-cover" />
-        </div>
-        <div className="flex flex-col gap-4 p-7 flex-1">
-          <div className="text-lg" style={{ color: "var(--color-accent-warm)" }}>★★★★★</div>
-          <p
-            className="flex-1 text-base italic leading-relaxed"
-            style={{ fontFamily: "Instrument Serif, serif", color: "var(--color-text-muted)", fontSize: "1rem" }}
-            key={active}
-          >
-            «{t.text}»
-          </p>
-          <div className="pt-3 border-t" style={{ borderColor: "var(--color-divider)" }}>
+        <div className="text-lg" style={{ color: "var(--color-accent-warm)" }}>★★★★★</div>
+        <p
+          className="flex-1 text-base italic leading-relaxed"
+          style={{ fontFamily: "Instrument Serif, serif", color: "var(--color-text-muted)", fontSize: "1.1rem" }}
+          key={active}
+        >
+          «{t.text}»
+        </p>
+        <div className="flex items-center gap-3 pt-4 border-t" style={{ borderColor: "var(--color-divider)" }}>
+          <img
+            src={t.photo}
+            alt={t.name}
+            className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+            style={{ border: "2px solid var(--color-primary-light)" }}
+          />
+          <div>
             <div className="text-sm font-semibold">{t.name}</div>
             <div className="text-xs" style={{ color: "var(--color-text-faint)" }}>{t.meta}</div>
           </div>
