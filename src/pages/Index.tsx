@@ -4,20 +4,17 @@ import { ProcessSection, ResultsSection } from "@/components/sections/ProcessRes
 import { TestimonialsSection, PricingSection } from "@/components/sections/TestimonialsPricingSection";
 import { ContactSection, Footer } from "@/components/sections/ContactFooterSection";
 import PortfolioSection from "@/components/sections/PortfolioSection";
+import ParticleBackground from "@/components/ParticleBackground";
 
 export default function Index() {
-  const [dark, setDark] = useState(false);
+  const [dark] = useState(true);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [form, setForm] = useState({ name: "", phone: "", message: "" });
   const [formStatus, setFormStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
 
   useEffect(() => {
-    const stored = localStorage.getItem("theme");
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-    const isDark = stored ? stored === "dark" : prefersDark;
-    setDark(isDark);
-    document.documentElement.classList.toggle("dark", isDark);
+    document.documentElement.classList.add("dark");
   }, []);
 
   useEffect(() => {
@@ -47,15 +44,12 @@ export default function Index() {
     }
   };
 
-  const toggleDark = () => {
-    const next = !dark;
-    setDark(next);
-    document.documentElement.classList.toggle("dark", next);
-    localStorage.setItem("theme", next ? "dark" : "light");
-  };
+  const toggleDark = () => {};
 
   return (
-    <div style={{ background: "var(--color-bg)", color: "var(--color-text)", minHeight: "100vh" }}>
+    <div style={{ position: "relative", color: "var(--color-text)", minHeight: "100vh" }}>
+      <ParticleBackground />
+      <div style={{ position: "relative", zIndex: 1 }}>
       <Header dark={dark} scrolled={scrolled} mobileOpen={mobileOpen} setMobileOpen={setMobileOpen} toggleDark={toggleDark} />
       <HeroSection />
       <PainPointsSection />
@@ -67,6 +61,7 @@ export default function Index() {
       <PricingSection />
       <ContactSection form={form} setForm={setForm} formStatus={formStatus} setFormStatus={setFormStatus} handleFormSubmit={handleFormSubmit} />
       <Footer />
+      </div>
     </div>
   );
 }
